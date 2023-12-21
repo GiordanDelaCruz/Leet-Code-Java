@@ -13,85 +13,56 @@ public class Solution {
         int colLen = img[0].length;
         int[][] newImage = new int[rowLen][colLen];
 
-        // Calculate average 
-        double total, average = 0;
+        //  Information about average 
+        int total, numOfCells, average;
+        total = numOfCells = average = 0;
         
-        // Loop through elements 
+        // Information about image smoother
+        int top, bottom, right, left;
+        top = bottom = right = left = 0;
+        
+        // Loop through cells
         for( int i = 0; i < rowLen; i++ ){
             for( int j = 0; j < colLen; j++ ){
-
-                // Check if surrounding cells are present
-                if( i >= 1 && i < rowLen - 1){
-                    if( j >= 1 && j < colLen - 1 ){
-                        total = (img[i-1][j-1]) + (img[i-1][j]) + (img[i-1][j+1]) 
-                        		+ (img[i][j-1]) + (img[i][j]) + (img[i][j+1]) 
-                        		+ (img[i+1][j-1]) + (img[i+1][j]) + (img[i+1][j+1]);  
-
-                        average = Math.floor(total / 9);
-                        newImage[i][j] = (int) average;
-                    }
-                }
-                	
-            	// Top & Bottom edge cells
-        		if( j != 0 && j != colLen -1) {
-        			
-        			if( i == 0 ) {
-        				total = img[i][j-1] + img[i][j] + img[i][j+1] + img[i+1][j-1] + img[i+1][j] + img[i+1][j+1] ;
-                        average = Math.floor(total/6);
-                        newImage[i][j] = (int) average;
-                        
-        			}else if( i == rowLen -1 ) {
-        				total = img[i][j-1] + img[i][j] + img[i][j+1] + img[i-1][j-1] + img[i-1][j] + img[i-1][j+1] ;
-	                    average = Math.floor(total/6);
-	                    newImage[i][j] = (int) average;
-        			}
-        		// Left & Right edge cells
-            	}else if(i != 0 && i != rowLen -1) {
-            		System.out.println("Inside left and right");
-            		if( j == 0 ) {
-        				total = img[i-1][j] + img[i][j] + img[i+1][j] + img[i-1][j+1] + img[i][j+1] + img[i+1][j+1] ;
-                        average = Math.floor(total/6);
-                        newImage[i][j] = (int) average;
-                        
-        			}else if( j == colLen -1 ) {
-        				total = img[i-1][j] + img[i][j] + img[i+1][j] + img[i-1][j-1] + img[i][j-1] + img[i+1][j-1] ;
-	                    average = Math.floor(total/6);
-	                    newImage[i][j] = (int) average;
-        			}
+            	
+            	// Calculate top, bottom, right, and left boundaries for image smoother
+            	top = Math.max(i-1, 0);
+            	right = Math.min(j+1, colLen-1);
+            	bottom = Math.min(i+1, rowLen-1);
+            	left = Math.max(j-1, 0);
+            	
+            	System.out.println("Original Image Cell = " + img[i][j] + " | i = " + i + " | j = " + j);
+    			System.out.println("top = " + top + " bottom = " + bottom + " right = " + right + " left = " + left + "\n");
+    			
+            	// Calculate average
+            	for( int row = top; row <= bottom; row++) {
+            		for( int col = left; col <= right; col++) {
+            			
+            			System.out.println("Image Smoother");
+            			System.out.println("row = " + row + " col = " + col);
+            			System.out.println("Cell data = " + img[row][col] + "\n");
+            			
+            			numOfCells += 1;
+            			total += img[row][col];		
+            		}
             	}
-                          	
-            	// Corner Cases
-                if( (i == 0 && j == 0) ){
-                    total = img[i][j] + img[i][j+1] + img[i+1][j] + img[i+1][j+1];
-                    average = Math.floor(total/4);
-                    newImage[i][j] = (int) average;
-                    
-                }else if( (i == 0 && j == colLen-1) ) {
-                	 total = img[i][j] + img[i+1][j] + img[i+1][j-1] + img[i][j-1];
-                     average = Math.floor(total/4);
-                     newImage[i][j] = (int) average;
-                     
-                }else if( (i == rowLen-1 && j == 0)) {
-                	 total = img[i][j] + img[i-1][j] + img[i][j+1] + img[i-1][j+1];
-                     average = Math.floor(total/4);
-                     newImage[i][j] = (int) average;
-                     
-                }else if( (i == rowLen-1 && j == colLen -1) ) {
-                	 total = img[i][j] + img[i][j-1] + img[i-1][j-1] + img[i-1][j];
-                     average = Math.floor(total/4);
-                     newImage[i][j] = (int) average;
-                }
-                
-                
+            	
+            	// Store average into new image
+            	average = (int) Math.floor(total/numOfCells);
+            	newImage[i][j] = average;
+            	
+            
                 // Reset total and average
                 total = 0;
                 average = 0;
+                numOfCells = 0;
             }
 
         }
         
         return newImage;
     }
+
 	
 	public static void main(String[] args) {
 		int[][] testImg = { {100, 200, 100}, {200, 50, 200}, {100, 200, 100}};
